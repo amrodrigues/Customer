@@ -1,0 +1,212 @@
+﻿<!DOCTYPE html>
+<html ng-app="appConsulta">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+
+    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="../Scripts/jquery-3.0.0.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+    <script src="../Scripts/angular.min.js"></script>
+
+    <script>
+
+        var app = angular.module('appConsulta', []);
+        app.controller('consultaController',
+            function ($scope, $http) {
+
+                //função para executar o serviço de consulta da API..
+                // consultar contatos
+                $scope.consultar = function () {
+
+                    $http.get("https://localhost:44353/api/customer/consultar")
+                        .then(function (obj) {
+                            $scope.customer = obj.data;
+                        })
+                        .catch(function (e) {
+                            $scope.mensagem = e.data.Mensagem; //mensagem de erro..
+                        });
+                };
+
+                //função para executar o serviço de consulta da API..
+                // consultar contatos
+                $scope.consultarporid = function (id) {
+
+                    $http.get("https://localhost:44353/api/customer/consultarporid?id="+id)
+                        .then(function (obj) {
+                            $scope.model = obj.data;
+                        })
+                        .catch(function (e) {
+                            $scope.mensagem = e.data.Mensagem; //mensagem de erro..
+                        });
+                };
+
+                //função para excluir o contato
+                $scope.excluir = function () {
+                    $http.delete("https://localhost:44353/api/customer/excluir?id=" + $scope.model.IdCustomer)
+                        .then(function (obj) {
+                            $scope.mensagem = obj.data.Mensagem;
+                            $scope.consultar();
+                        })
+                        .catch(function (e) {
+                            alert(e.data.Mensagem);
+                            $scope.mensagem = e.data.Mensagem;
+                        });
+                };
+
+                //função para atualizar o contato
+                $scope.atualizar = function () {
+
+                    $http.put("https://localhost:44353/api/customer/atualizar", $scope.model)
+                        .then(function (obj) {
+                            $scope.mensagem = obj.data.Mensagem;
+                            $scope.consultar();
+                        })
+                        .catch(function (e) {
+                            $scope.mensagem = e.data.Mensagem;
+                        });
+                };
+
+
+            });
+
+    </script>
+
+</head>
+<body class="container" ng-controller="consultaController">
+
+    <h2>Consulta de Clientes</h2>
+    <a href="/index.html">Página inicial</a>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Filtrar Clientes:</label>
+            <input type="text" class="form-control"
+                   placeholder="Digite aqui" ng-model="filtropesquisa" />
+        </div>
+    </div>
+
+    <br />
+
+    <div>
+        <strong>{{mensagem}}</strong>
+    </div>
+
+    <table class="table table-bordered" ng-init="consultar()">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th>Dt Nascimento</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="c in customer | filter: filtropesquisa | orderBy : ordenacao">
+                <td>{{c.IdCustomer}}</td>
+                <td>{{c.CPF}}</td>
+                <td>{{c.Name}}</td>
+                <td>{{c.DateOfBirth | date : 'dd/MM/yyyy'}}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm"
+                            data-target="#janelaedicao"
+                            data-toggle="modal"
+                            ng-click="consultarporid(c.IdCustomer)">
+                        Atualizar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            data-target="#janelaexclusao"
+                            data-toggle="modal"
+                            ng-click="consultarporid(c.IdCustomer)">
+                        Excluir
+                    </button>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="8">
+                    Quantidade de Clientes:
+                    {{(customer | filter: filtropesquisa).length}}
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <div id="janelaedicao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h4 class="text-white">Atualizar </h4>
+                </div>
+                <div class="modal-body">
+                    Código: <label>{{model.IdCustomer}}</label>
+                    <br />
+
+                    <label>CPF:{{model.CPF}}</label>
+                    <br />
+
+                    <label>Nome:</label>
+                    <input type="text" class="form-control"
+                           placeholder="Digite aqui"
+                           ng-model="model.Name" />
+                    <br />
+
+
+                    <label>Data de Nascimento:</label>
+                    <input type="text" class="form-control"
+                           placeholder="Digite aqui"
+                           ng-model="model.DateOfBirth" />
+                    <br />
+
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" data-dismiss="modal" ng-click="atualizar()">Atualizar Dados</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="janelaexclusao" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h4 class="text-white">Cliente</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    Código: <label>{{model.IdCustomer}}</label>
+                    <br />
+
+                    CPF: <label>{{model.CPF}}</label>
+                    <br />
+
+                    Nome: <label>{{model.Name}}</label>
+                    <br />
+
+                    Data de Nascimento: <label>{{model.DateOfBirth | date : 'dd/MM/yyyy'}}</label>
+                    <br />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" data-dismiss="modal" ng-click="excluir()"> Confirmar Exclusão</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</body>
+</html>
