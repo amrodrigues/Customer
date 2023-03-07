@@ -10,5 +10,7 @@ namespace ProjetoBusiness.Contracts
     public interface ICustomerBusiness : IBaseBusiness<Customer>
     {
         List<Customer> ConsultaPorCPF(string cpf);
+
+        List<Customer> consultarporDtNasc(DateTime dateOfBirth);
     }
 }

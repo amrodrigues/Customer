@@ -19,12 +19,19 @@ namespace ProjetoBusiness.Persistence
 
             this.repository = repository;
 
-}
-public List<Customer> ConsultaPorCPF(string cpf)
+            }
+        public List<Customer> ConsultaPorCPF(string cpf)
         {
             return repository.FindbyCPF(cpf);
         }
-    }
+
+
+        public List<Customer> consultarporDtNasc(DateTime dateOfBirth)
+        {
+            return repository.FindbydateOfBirth(dateOfBirth);
+        }
 
     }
+
+}
 

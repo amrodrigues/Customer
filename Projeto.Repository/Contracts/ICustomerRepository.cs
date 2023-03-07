@@ -10,5 +10,6 @@ namespace Projeto.Repository.Contracts
     public interface ICustomerRepository : IBaseRepository<Customer>
     {
         List<Customer> FindbyCPF(string cpf);
+        List<Customer> FindbydateOfBirth(DateTime dateOfBirth);
     }
 }

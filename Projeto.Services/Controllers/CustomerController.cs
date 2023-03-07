@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.ModelBinding;
 using ProjetoBusiness;
+using System.Globalization;
 
 namespace Projeto.Services.Controllers
 {
@@ -96,6 +97,32 @@ namespace Projeto.Services.Controllers
             }
         }
 
+        [Route("consultarporDtNasc")]
+        [HttpGet]
+        public HttpResponseMessage consultarporDtNasc(DateTime dateOfBirth)
+        {
+            List<CustomerConsultaResponse> lista = new List<CustomerConsultaResponse>();
+            try
+            {
+                foreach (Customer c in business.consultarporDtNasc(dateOfBirth))
+                {
+                    CustomerConsultaResponse response = new CustomerConsultaResponse();
+                    response.IdCustomer = c.IdCustomer;
+                    response.CPF = c.CPF;
+                    response.Name = c.Name;
+                    response.DateOfBirth = c.DateOfBirth;
+
+                    lista.Add(response);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK, lista);
+            }
+            catch (Exception)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.BadRequest, lista);
+            }
+        }
+
         [Route("consultarporid")]
         [HttpGet]
         public HttpResponseMessage ConsutarPorId(int id)
@@ -117,6 +144,8 @@ namespace Projeto.Services.Controllers
                 return Request.CreateResponse(HttpStatusCode.BadRequest, model);
             }
         }
+
+
         [Route("consultarporCPF")]
         [HttpGet]
         public HttpResponseMessage ConsutarPorCPF(string cpf)

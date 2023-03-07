@@ -32,6 +32,11 @@ namespace ProjetoBusiness.Persistence
             return repository.FindbyId(id);
         }
 
+
+
+
+
+
         public virtual List<T> ConsultarTodos()
         {
             return repository.FindAll();

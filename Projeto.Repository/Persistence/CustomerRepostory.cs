@@ -21,5 +21,16 @@ namespace Projeto.Repository.Persistence
             }
 
         }
+
+        public List<Customer> FindbydateOfBirth(DateTime dateOfBirth)
+        {
+            using (DataContext ctx = new DataContext())
+            {
+                return ctx.Customer
+                        .Where(c => c.DateOfBirth.Equals(dateOfBirth))
+                        .ToList();
+            }
+
+        }
     }
 }
