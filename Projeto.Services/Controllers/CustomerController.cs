@@ -16,7 +16,7 @@ namespace Projeto.Services.Controllers
     [RoutePrefix("api/customer")]
     public class CustomerController : ApiController
     {
-        private ICustomerBusiness business;
+        private  ICustomerBusiness business;
 
         public CustomerController(ICustomerBusiness business)
         {
@@ -35,16 +35,16 @@ namespace Projeto.Services.Controllers
                 if (Validacoes.ValidaCPF(request.CPF))
                 {
                     if (business.ConsultaPorCPF(request.CPF).Count == 0)
-                        { 
-                c.CPF = request.CPF;
-                c.Name = request.Name;
-                c.DateOfBirth = request.DateOfBirth;
+                    {
+                        c.CPF = request.CPF;
+                        c.Name = request.Name;
+                        c.DateOfBirth = request.DateOfBirth;
 
-                business.Cadastrar(c);
+                        business.Cadastrar(c);
 
-                response.Mensagem = $"Cliente {request.Name} , cadastrado com sucesso.";
-                return Request.CreateResponse(HttpStatusCode.OK, response);
-                }
+                        response.Mensagem = $"Cliente {request.Name} , cadastrado com sucesso.";
+                        return Request.CreateResponse(HttpStatusCode.OK, response);
+                    }
                     else
                     {
                         response.Mensagem = $"CPF já cadastrado na base.";
@@ -80,11 +80,13 @@ namespace Projeto.Services.Controllers
             {
                 foreach (Customer c in business.ConsultarTodos())
                 {
-                    CustomerConsultaResponse response = new CustomerConsultaResponse();
-                    response.IdCustomer = c.IdCustomer;
-                    response.CPF = c.CPF;
-                    response.Name = c.Name;
-                    response.DateOfBirth = c.DateOfBirth;
+                    CustomerConsultaResponse response = new CustomerConsultaResponse
+                    {
+                        IdCustomer = c.IdCustomer,
+                        CPF = c.CPF,
+                        Name = c.Name,
+                        DateOfBirth = c.DateOfBirth
+                    };
 
                     lista.Add(response);
                 }
@@ -99,18 +101,20 @@ namespace Projeto.Services.Controllers
 
         [Route("consultarporDtNasc")]
         [HttpGet]
-        public HttpResponseMessage consultarporDtNasc(DateTime dateOfBirth)
+        public HttpResponseMessage ConsultarporDtNasc(DateTime dateOfBirth)
         {
             List<CustomerConsultaResponse> lista = new List<CustomerConsultaResponse>();
             try
             {
-                foreach (Customer c in business.consultarporDtNasc(dateOfBirth))
+                foreach (Customer c in business.ConsultarporDtNasc(dateOfBirth))
                 {
-                    CustomerConsultaResponse response = new CustomerConsultaResponse();
-                    response.IdCustomer = c.IdCustomer;
-                    response.CPF = c.CPF;
-                    response.Name = c.Name;
-                    response.DateOfBirth = c.DateOfBirth;
+                    CustomerConsultaResponse response = new CustomerConsultaResponse
+                    {
+                        IdCustomer = c.IdCustomer,
+                        CPF = c.CPF,
+                        Name = c.Name,
+                        DateOfBirth = c.DateOfBirth
+                    };
 
                     lista.Add(response);
                 }
@@ -130,13 +134,13 @@ namespace Projeto.Services.Controllers
             CustomerConsultaResponse model = new CustomerConsultaResponse();
             try
             {
-                    Customer c = business.ConsultarPorId(id);
-                    model.IdCustomer = c.IdCustomer;
-                    model.CPF = c.CPF;
-                    model.Name = c.Name;
-                    model.DateOfBirth = c.DateOfBirth;
+                Customer c = business.ConsultarPorId(id);
+                model.IdCustomer = c.IdCustomer;
+                model.CPF = c.CPF;
+                model.Name = c.Name;
+                model.DateOfBirth = c.DateOfBirth;
 
-               return Request.CreateResponse(HttpStatusCode.OK, model);
+                return Request.CreateResponse(HttpStatusCode.OK, model);
             }
             catch (Exception)
             {
@@ -150,31 +154,42 @@ namespace Projeto.Services.Controllers
         [HttpGet]
         public HttpResponseMessage ConsutarPorCPF(string cpf)
         {
-            CustomerConsultaResponse model = new CustomerConsultaResponse();
-            try
+            var response = new CustomerResponse();
+            if (Validacoes.ValidaCPF(cpf))
             {
-                foreach (Customer c in business.ConsultaPorCPF(cpf))
+                CustomerConsultaResponse model = new CustomerConsultaResponse();
+                try
+                {
+                    foreach (Customer c in business.ConsultaPorCPF(cpf))
+                    {
+
+                        model.IdCustomer = c.IdCustomer;
+                        model.CPF = c.CPF;
+                        model.Name = c.Name;
+                        model.DateOfBirth = c.DateOfBirth;
+
+                        //      return Request.CreateResponse(HttpStatusCode.OK, model);
+                    }
+                    if (model.IdCustomer == 0)
+                    { return Request.CreateResponse(HttpStatusCode.BadRequest, model); }
+
+                    else
+                    { return Request.CreateResponse(HttpStatusCode.OK, model); }
+
+                }
+                catch (Exception)
                 {
 
-                    model.IdCustomer = c.IdCustomer;
-                    model.CPF = c.CPF;
-                    model.Name = c.Name;
-                    model.DateOfBirth = c.DateOfBirth;
-
-                    //      return Request.CreateResponse(HttpStatusCode.OK, model);
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, model);
                 }
-                if (model.IdCustomer == 0)
-                { return Request.CreateResponse(HttpStatusCode.BadRequest, model); }
-
-                else
-                { return Request.CreateResponse(HttpStatusCode.OK, model); }
-
             }
-            catch (Exception)
+            else
             {
+                response.Mensagem = $"CPF inválido.";
+                return Request.CreateResponse(HttpStatusCode.BadRequest, response);
 
-                return Request.CreateResponse(HttpStatusCode.BadRequest, model);
             }
+
         }
 
         [Route("atualizar")]
@@ -186,11 +201,13 @@ namespace Projeto.Services.Controllers
             {
                 try
                 {
-                    Customer c = new Customer();
-                    c.IdCustomer = request.IdCustomer;
-                    c.CPF = request.CPF;
-                    c.Name = request.Name;
-                    c.DateOfBirth = request.DateOfBirth;
+                    Customer c = new Customer
+                    {
+                        IdCustomer = request.IdCustomer,
+                        CPF = request.CPF,
+                        Name = request.Name,
+                        DateOfBirth = request.DateOfBirth
+                    };
 
                     business.Atualizar(c);
 
@@ -218,7 +235,7 @@ namespace Projeto.Services.Controllers
         {
             var response = new CustomerResponse();
 
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid)
             {
                 try
                 {
@@ -231,11 +248,11 @@ namespace Projeto.Services.Controllers
                 }
                 catch (Exception e)
                 {
-                    response.Mensagem =e.Message;
+                    response.Mensagem = e.Message;
                     return Request.CreateResponse(HttpStatusCode.BadRequest, response);
                 }
             }
-            else 
+            else
             {
                 response.Mensagem = ObterMensagensDeValidacao(ModelState);
                 return Request.CreateResponse(HttpStatusCode.BadRequest, response);
@@ -260,5 +277,5 @@ namespace Projeto.Services.Controllers
 
 
     }
-    
+
 }

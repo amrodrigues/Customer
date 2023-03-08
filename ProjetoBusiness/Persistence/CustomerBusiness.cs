@@ -12,7 +12,7 @@ namespace ProjetoBusiness.Persistence
     public class CustomerBusiness : BaseBusiness<Customer>, ICustomerBusiness
 
     {
-        private ICustomerRepository repository;
+        private readonly ICustomerRepository repository;
 
         public CustomerBusiness(ICustomerRepository repository) : base(repository)
             {
@@ -20,13 +20,13 @@ namespace ProjetoBusiness.Persistence
             this.repository = repository;
 
             }
-        public List<Customer> ConsultaPorCPF(string cpf)
+        public virtual List<Customer> ConsultaPorCPF(string cpf)
         {
             return repository.FindbyCPF(cpf);
         }
 
 
-        public List<Customer> consultarporDtNasc(DateTime dateOfBirth)
+        public List<Customer> ConsultarporDtNasc(DateTime dateOfBirth)
         {
             return repository.FindbydateOfBirth(dateOfBirth);
         }

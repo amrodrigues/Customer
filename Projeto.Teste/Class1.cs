@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Projeto.Repository
+namespace Projeto.Teste
 {
     public class Class1
     {

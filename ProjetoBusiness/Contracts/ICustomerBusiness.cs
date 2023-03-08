@@ -11,6 +11,6 @@ namespace ProjetoBusiness.Contracts
     {
         List<Customer> ConsultaPorCPF(string cpf);
 
-        List<Customer> consultarporDtNasc(DateTime dateOfBirth);
+        List<Customer> ConsultarporDtNasc(DateTime dateOfBirth);
     }
 }
