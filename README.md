@@ -1,33 +1,48 @@
 <h1 align="center"> API - CADASTRO DE CLIENTE </h1>
 
+### Objetivo
+
+Desenvolver ua aplicação para Cadastro de Clientes utilizando swagger e api.
+
+- •Endpoints:
+- 2.1. POST /api/v1/Customer/create
+Json
+{
+	“cpf”: “string”
+	“name”: “string”,
+	“dateOfBirth”: “1980-04-04”
+}
+- 2.2.	GET /api/v1/Customer/exists/cpf/{cpf}
+- 2.3.	GET /api/v1/Customer/exists/date-of-birth/{dateofbirth}/cpf/{cpf}
+
 
 ##### 💻 Informações Técnicas
 
  Para rodar este projeto, será necessário instalar:
  - [Visual Studio 2022]("https://visualstudio.microsoft.com/pt-br/downloads/"): editor de código para executar a aplicação. 
 
-# Estrutura:
+# Estrutura do Projeto:
 
 - 0- Modelagem de Entidades
 - 1- Sistema
-  - 1-1- Camada de Apresentação
-  - 1.2- Camada de Serviços
-  - 1.3- Camada de Regras de Negócio
-  - 1.4- Camada de Acesso a Dados
-  - 1.5- Camada de Testes
+-  1-1- Camada de Apresentação
+-  1.2- Camada de Serviços
+-  1.3- Camada de Regras de Negócio
+-  1.4- Camada de Acesso a Dados
+-  1.5- Camada de Testes
 
-## 0- Modelagem de Entidades
+### 0- Modelagem de Entidades
 
 O projeto da Camada Entidades foi criado como uma Class Library e inserida a Class Customer, com os seguintes atributos:
- -  public int IdCustomer { get; set; }
- -  public string CPF { get; set; }
- -  public string Name { get; set; }
- -  public DateTime DateOfBirth { get; set; }
+-   public int IdCustomer { get; set; }
+-   public string CPF { get; set; }
+-   public string Name { get; set; }
+-   public DateTime DateOfBirth { get; set; }
 
 ### 1.1- Camada de Apresentação
 
 A Camada de Apresentação foi criado um projeto Aplication Web ASP.Net vazio.
-Foi instalado o bootstrap e angularjs pelo Gerenciador de Pacotes do NuGet .
+Foi instalado o Bootstrap e Angularjs pelo Gerenciador de Pacotes do NuGet .
 Criando as páginas HTML para visualização do cadastro de cliente e consulta do Cliente, com a opção de alteração e exclusão do mesmo.
 
 ### 1.2- Camada de Serviços
@@ -38,8 +53,17 @@ Instalamos o EntityFramework através do Gerenciador de Pacotes do NuGet.
 Instalamos o Simple Injector para WebApi através do Gerenciador de Pacotes do NuGet. 
 
 A estrutura dessa camada:
-Controllers = CustomerController - Onde ficam os controles de inclusão , alteração , busca por CPF, buscar por ID e exclusão do Cliente
-Model =  Onde ficam as models correspondentes a cada método do Controller.
+ - Controllers 
+  - CustomerController :
+     - Cadastrar()
+     - Atualizar()
+     - Excluir()
+     - ConsultarTodos()
+     - ConsultarporId(int id)
+     - ConsultarporCPF(string cpf)
+     
+
+- Model =  Onde ficam as models correspondentes a cada método do Controller.
 
 Incluímos o Banco de dados e acrescentamos no Web.config.xml  a string de conexão com o Banco:
 
@@ -73,4 +97,4 @@ e instalado o Moq através Gerenciador de Pacotes do NuGet
 ### Melhorias:
 - 1 - Na Camada de apresentação melhorar a validação do campo data de nascimento.
 - 2 - Na Camada de testes, novos testes referentes às demais camadas do projeto.
-- 3- .Na Camada de testes, corrigir a system.nullreferenceexception quando utilizamos o Mock da camada ICustomerBusiness.
+- 3 - Na Camada de testes, corrigir a system.nullreferenceexception quando utilizamos o Mock da camada ICustomerBusiness.
