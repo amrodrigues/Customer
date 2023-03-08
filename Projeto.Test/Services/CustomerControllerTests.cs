@@ -2,6 +2,7 @@ using Moq;
 using Projeto.Entities;
 using Projeto.Services.Controllers;
 using Projeto.Services.Models;
+using ProjetoBusiness;
 using ProjetoBusiness.Contracts;
 using ProjetoBusiness.Persistence;
 using System;
@@ -16,21 +17,40 @@ namespace Projeto.Test
 		readonly CustomerController customerController;
         readonly ICustomerBusiness business;
         public ICustomerBusiness Business1 => business;
-
+   
         public CustomerControllerTests()
 		{
 
-        // customerController = new CustomerController(new Mock<ICustomerBusiness>().Object);
-        customerController = new CustomerController(business)
+
+
+        customerController = new CustomerController(new Mock<ICustomerBusiness>().Object)
+       // customerController = new CustomerController(business)
             {
                 Request = new HttpRequestMessage(),
                 Configuration = new HttpConfiguration()
             };
-        }
-        HttpResponseMessage response = new HttpResponseMessage();
-        CustomerCadastroRequest model = new CustomerCadastroRequest();
 
-    
+
+        }
+
+        HttpResponseMessage response = new HttpResponseMessage();
+
+        [Fact]
+        public void ValidarCPFinvalido()
+        {
+            var teste = "1111111";
+            var resultado = Validacoes.ValidaCPF(teste);
+            Assert.False(resultado);
+        }
+
+        [Fact]
+        public void ValidarCPFvalido()
+        {
+            var teste = "57852546030";
+            var resultado = Validacoes.ValidaCPF(teste);
+            Assert.True(resultado);
+        }
+
         [Fact]
         public void ConsutarPorCPF()
         {
@@ -39,27 +59,55 @@ namespace Projeto.Test
             Assert.Equal("BadRequest", response.StatusCode.ToString());
         }
 
+        //[Fact]
+        //public void Cadastrar()
+        //{
+        //    CustomerCadastroRequest model = new CustomerCadastroRequest();
+        //    model.CPF = "57852546030";
+        //    model.Name = "Anna Maria";
+        //    model.DateOfBirth = Convert.ToDateTime("2012/07/13");
+        //    response = customerController.Cadastrar(model);
+        //    Assert.Equal("BadRequest", response.StatusCode.ToString());
+        //}
+
         [Fact]
-        public void Cadastrar()
+        public void Atualizar()
         {
-            model.CPF = "09678595737";
+            CustomerEdicaoRequest model = new CustomerEdicaoRequest();
+            model.IdCustomer = 1;
+            model.CPF = "57852546030";
             model.Name = "Anna Maria";
-            model.DateOfBirth = Convert.ToDateTime("1982/07/13");
-            response = customerController.Cadastrar(model);
-            Assert.Equal("BadRequest", response.StatusCode.ToString());
+            model.DateOfBirth = Convert.ToDateTime("2012/07/13");
+            response = customerController.Atualizar(model);
+            Assert.Equal("OK", response.StatusCode.ToString());
         }
 
-        [Fact]
-        public void Consultar()
-        {
-            response = customerController.ConsutarPorId(1);
-            Assert.Equal("BadRequest", response.StatusCode.ToString());
-        }
 
         [Fact]
-        public void Consultar2()
+        public void ConsultarporId()
         {
             response = customerController.ConsutarPorId(5);
+            Assert.Equal("BadRequest", response.StatusCode.ToString());
+        }
+
+        [Fact]
+        public void ConsultarTodos()
+        {
+            response = customerController.ConsutarTodos();
+            Assert.Equal("BadRequest", response.StatusCode.ToString());
+        }
+
+        [Fact]
+        public void ConsultarporDtNasc()
+        {
+            response = customerController.ConsultarporDtNasc(Convert.ToDateTime("2012/01/01"));
+            Assert.Equal("BadRequest", response.StatusCode.ToString());
+        }
+
+        [Fact]
+        public void Excluir()
+        {
+            response = customerController.Excluir(1);
             Assert.Equal("BadRequest", response.StatusCode.ToString());
         }
 
